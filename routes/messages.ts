@@ -4,14 +4,12 @@ import {Message} from "../types";
 
 const messagesRouter = express.Router();
 const path = './messages';
-let data: Message[] = [];
 
 messagesRouter.post('/', async (req, res) => {
     const newMessage: Message = {
         message: req.body.message,
         datetime: new Date().toISOString(),
     };
-
     try {
         await fs.writeFile(`${path}/${newMessage.datetime}.txt`, JSON.stringify(newMessage));
     } catch (e) {
@@ -22,6 +20,7 @@ messagesRouter.post('/', async (req, res) => {
 });
 
 messagesRouter.get('/', async (req, res) => {
+    let data: Message[] = [];
     try {
         const files = await fs.readdir(path);
         for(const file of files) {
