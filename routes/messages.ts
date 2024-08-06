@@ -4,6 +4,7 @@ import {Message} from "../types";
 
 const messagesRouter = express.Router();
 const path = './messages';
+let data: Message[] = [];
 
 messagesRouter.post('/', async (req, res) => {
     const newMessage: Message = {
@@ -18,6 +19,24 @@ messagesRouter.post('/', async (req, res) => {
     }
 
     return res.send(newMessage);
+});
+
+messagesRouter.get('/', async (req, res) => {
+    try {
+        const files = await fs.readdir(path);
+        for(const file of files) {
+            try {
+                const fileContent = await fs.readFile(path + '/' + file);
+                data.push(JSON.parse(fileContent.toString()));
+            } catch (e) {
+                console.error('Ошибка чтения файла', e);
+            }
+        }
+    } catch (e) {
+        data = [];
+    }
+
+    return res.send(data.slice(-5));
 });
 
 export default messagesRouter;
